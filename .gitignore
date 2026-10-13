@@ -1,0 +1,16 @@
+# Never commit private signing keys, secrets or user data
+*.pem
+*.pfx
+*.p12
+*.key
+.env
+.env.*
+**/bin/
+**/obj/
+**/.vs/
+__pycache__/
+.DS_Store
+.minecraft/
+profiles/
+saves/
+tokens/
