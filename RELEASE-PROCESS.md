@@ -1,26 +1,30 @@
-# Kolega Launcher — GitHub update channel (v0.7.1 → v0.8.0)
+# Kolega Launcher — podpisane aktualizacje przez GitHub Pages
 
-## One-time owner action
-Open [Settings → Pages](https://github.com/Tymon2323Studios/kolega-launcher-updates/settings/pages) and choose **Build and deployment → Source: GitHub Actions**. The current workflow is known to fail at **Configure Pages** until this is done. GITHUB_TOKEN cannot auto-enable Pages; do not put a PAT or signing key in the repository.
+## Obecny stan — 2026-10-14
+- ✅ Repozytorium `Tymon2323Studios/kolega-launcher-updates` i GitHub Pages działają (ostatnia publikacja zakończona sukcesem).
+- ✅ Workflow wykonuje testy weryfikacji oraz sprawdza RSA-PSS, SHA-256 i format archiwum.
+- ✅ Przygotowany jest lokalny pakiet źródłowy v0.8.0 z narzędziami **PRZYGOTUJ-UPDATE.bat** i **OPUBLIKUJ-UPDATE.bat** (udostępniony w rozmowie, nie ma tu jeszcze plików EXE).
+- ⚠️ **Brak obecnie publicznego release.json i paczki wykonywalnej**. Nie ma nowej aktualizacji do pobrania, dopóki nie przejdzie Windows build, test w grze i świadoma publikacja.
 
-## One-time action in each existing v0.7.1 launcher
-In **Aktualizacje**, set and save:
-https://tymon2323studios.github.io/kolega-launcher-updates/release.json
+## Jednorazowa konfiguracja starego launchera v0.7.1
+W zakładce **AKTUALIZACJE** należy zapisać adres:
+`https://tymon2323studios.github.io/kolega-launcher-updates/release.json`
 
-Until a signed release is published this URL returns 404; this is expected. v0.7.1 checks only the URL saved in its settings. When an update is published it will verify an RSA-PSS/SHA-256 signature before offering installation.
+v0.8.0 używa tego oficjalnego adresu domyślnie na nowej instalacji; istniejące własne ustawienia nie są nadpisywane. Przed pierwszym wydaniem manifest nie istnieje (404).
 
-## Publishing a real v0.8.0 update
-1. Build and test Fabric v0.8.0 JAR, self-contained win-x64 launcher v0.8.0 EXE, and standalone updater EXE on Windows. Confirm launcher's FileVersion = 0.8.0.
-2. Prepare a flat publish folder with:
-   - KolegaLauncher.exe (v0.8.0)
-   - Updater/KolegaUpdater.exe
-   - ClientFiles/kolega-client-0.8.0.jar
-   - **ClientFiles/kolega-client-0.7.1.jar (compatibility shim)**
-3. **Important**: the updater already shipped in v0.7.1 requires the 0.7.1 JAR by its literal filename. If this legacy file is absent it rejects the entire v0.8.0 archive *before* installation. The v0.8.0 launcher must reference and deploy the **new** 0.8.0 JAR; the old JAR stays unused in the package solely for compatibility.
-4. Update future updater checks to derive the required JAR filename from the **signed manifest version** rather than from a build-time literal. Keep legacy compatibility file in release packages until no v0.7.1 installs remain.
-5. Use the launcher source's offline **Publisher** tool with the PRIVATE PEM stored locally only. Publisher must be version-aware and include both JARs for this first upgrade. **Never commit/upload PEM, tokens, passwords, raw game files, or personal data.**
-6. Local check: place *signed* release.json and ZIP in site/ and run \`python tools/validate_release.py site\`. CI repeats 8 negative/positive tests and validates PSS signature against the pinned trusted public key.
-7. Publish these exact files to site/ in the repository if **ZIP ≤ 100 MB** (GitHub single Git object limit) and run GitHub Actions. If the compressed file is larger, stop and use a release-hosting approach with appropriate trusted redirects rather than bypassing the size limit.
-8. Verify HTTPS Pages URLs return the expected contents; test a real v0.7.1 → v0.8.0 upgrade, restart handshake, rollback on induced failure, and saved HUD/profiles.
+## Pierwsze wydanie v0.8.0: bezpieczna procedura
+1. Na Windows z JDK 21 i .NET 10 SDK uruchom **PRZYGOTUJ-UPDATE.bat** z kompletnych źródeł v0.8.0. Podaj ścieżkę do prywatnego pliku PEM znajdującego się **poza projektem**. Nie przesyłaj klucza przez czat ani GitHub.
+2. Skrypt buduje najnowszy JAR, samodzielny launcher i updater, uruchamia testy, podpisuje manifest i weryfikuje archiwum. Tworzy `dist/ready-for-github-v080/release.json` oraz `KolegaLauncher-update.zip`. **Nie publikuje**.
+3. Testuj v0.8.0 na Windows w prawdziwym Fabric Minecraft 1.21.10, sprawdź profile, nowe visuale, Zoom, updater i próbny rollback. Zachowaj kopię działającej v0.7.1.
+4. Po potwierdzeniu wszystkich testów uruchom **OPUBLIKUJ-UPDATE.bat** (wymaga Git for Windows z uwierzytelnieniem). Wpisz `PUBLIKUJ`. Skrypt ponownie weryfikuje podpis, wstawia oba pliki do `site/` i wykonuje **jeden** commit/push do `main`.
+5. Zaczekaj na zielony workflow w [Actions](https://github.com/Tymon2323Studios/kolega-launcher-updates/actions); sprawdź bezpośrednie adresy Pages. Dopiero wtedy v0.7.1 może zaoferować pobranie v0.8.0.
 
-**No current release has been published**, so do not imply auto-updates already work. Do not serve unsigned JSON or an untested EXE.
+## Zgodność ze starym updaterem
+Updater w v0.7.1 wymaga dosłownie `ClientFiles/kolega-client-0.7.1.jar`. Dlatego w pierwszej paczce muszą być **oba** pliki: `ClientFiles/kolega-client-0.8.0.jar` oraz dodatkowa kopia nowego JAR o starszej nazwie. Gra używa wyłącznie nowej wersji. W przyszłych aktualizacjach updater v0.8.0 sprawdza JAR zgodnie z wersją w podpisanym manifeście.
+
+## Zabezpieczenia i ograniczenia
+- Prywatnego klucza PEM **nigdy nie dodajemy** do GitHub repo, GitHub Secrets, paczki ZIP czy logów. Publiczny klucz w `tools/updater-public-key.pem` służy tylko do weryfikacji.
+- Manifest i ZIP muszą być opublikowane razem i przejść RSA-PSS/SHA-256.
+- ZIP w repo nie może przekraczać **100MB** na pojedynczy plik Git.
+- GitHub Pages jest serwerem plików HTTPS, nie systemem budowania Windowsowego EXE. Rzeczywiste wydanie należy najpierw zbudować, podpisać i przetestować.
+- To **aktualizacja dostępna z launchera**, z automatycznym sprawdzaniem przy uruchomieniu oraz instalacją po kliknięciu; nie wymuszamy bezgłośnej instalacji.
