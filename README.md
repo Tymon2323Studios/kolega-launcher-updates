@@ -1,25 +1,24 @@
-# Kolega Launcher — Update Channel 💜
+# Kolega Launcher — signed update channel 💜
 
-Publiczny kanał aktualizacji **Kolega Launcher** (Minecraft Java 1.21.10, Fabric).
-
-Ta gałąź zawiera wyłącznie pliki niezbędne do hostowania aktualizacji. **Nie zawiera gry Minecraft, kluczy prywatnych, kont, tokenów ani zapisów światów.**
+**Minecraft Java 1.21.10 · Fabric · .NET 10 WPF launcher**
 
 ## Status
-- Repozytorium i infrastruktura: przygotowywane.
-- Obecna działająca wersja u użytkowników: v0.6.1.1.
-- Updater v0.6.2: wymaga potwierdzonego buildu i testu na Windows.
-- **Brak opublikowanego release.json — nie ma jeszcze automatycznych aktualizacji do pobrania.**
+- **v0.7.1 Smooth Zoom:** installed and gameplay-tested by the project team.
+- **GitHub update hosting:** source, manifest validator, and workflow are configured; 8 validator tests pass on GitHub Actions.
+- **GitHub Pages:** must be enabled by repository owner at [Settings → Pages](https://github.com/Tymon2323Studios/kolega-launcher-updates/settings/pages) with **Source: GitHub Actions**. The deploy job is expected to fail at **Configure Pages** until enabled.
+- **Current release:** none. Do not treat this as a live updater until the signed release.json and matching tested ZIP have been published.
 
-## GitHub Pages
-Po włączeniu **Settings → Pages → Source: GitHub Actions** strona informacyjna będzie dostępna pod:
-https://tymon2323studios.github.io/kolega-launcher-updates/
-
-Manifest (dopiero po publikacji sprawdzonego, podpisanego wydania):
+## Existing v0.7.1 launcher (one-time setup)
+Inside **AKTUALIZACJE**, save:
 https://tymon2323studios.github.io/kolega-launcher-updates/release.json
 
-## Publikacja
-Do `site/releases/` dodaje się wyłącznie **przetestowane**, poprawnie podpisane paczki aktualizacji.
-Manifest musi zawierać podpis RSA-PSS/SHA-256 zgodny z kluczem publicznym osadzonym w updaterze.
-Walidator `tools/validate_release.py` sprawdza strukturę ZIP, URL, sumy i rozmiary; podpis musi być dodatkowo sprawdzony przez launcher/narzędzie wydawcy.
+Until the first tested release (planned v0.8.0), a 404 at that URL is expected. This is **not** evidence of a broken v0.7.1 installation.
 
-**Nigdy nie commituj prywatnego klucza podpisywania.**
+## Safety
+The launcher pins an RSA public key and verifies RSA-PSS/SHA256 signatures, exact download size, SHA256 hash and required ZIP entries. The GitHub workflow validates release signatures and compatibility with the **v0.7.1 legacy updater**, which expects an extra ClientFiles/kolega-client-0.7.1.jar in the first new release.
+
+Never upload private PEM signing keys, access tokens, accounts, or Minecraft player data.
+
+**Publisher instructions:** [RELEASE-PROCESS.md](RELEASE-PROCESS.md).  
+**Validation:** [tools/validate_release.py](tools/validate_release.py).  
+**Development code previews:** [development/](development/).
