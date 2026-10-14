@@ -1,24 +1,28 @@
-# Kolega Launcher — signed update channel 💜
+# Kolega Launcher — podpisany kanał automatycznych aktualizacji 💜
 
-**Minecraft Java 1.21.10 · Fabric · .NET 10 WPF launcher**
+Minecraft Java **1.21.10** · Fabric · .NET 10 WPF.
 
-## Status
-- **v0.7.1 Smooth Zoom:** installed and gameplay-tested by the project team.
-- **GitHub update hosting:** source, manifest validator, and workflow are configured; 8 validator tests pass on GitHub Actions.
-- **GitHub Pages:** must be enabled by repository owner at [Settings → Pages](https://github.com/Tymon2323Studios/kolega-launcher-updates/settings/pages) with **Source: GitHub Actions**. The deploy job is expected to fail at **Configure Pages** until enabled.
-- **Current release:** none. Do not treat this as a live updater until the signed release.json and matching tested ZIP have been published.
+## Status (2026-10-14)
 
-## Existing v0.7.1 launcher (one-time setup)
-Inside **AKTUALIZACJE**, save:
-https://tymon2323studios.github.io/kolega-launcher-updates/release.json
+| Funkcja | Stan |
+|---|---|
+| Publiczny hosting GitHub Pages (HTTPS) | ✅ aktywny |
+| Workflow GitHub Actions | ✅ publikuje stronę |
+| Walidator podpisu RSA-PSS, SHA256 i paczki | ✅ aktywny |
+| v0.7.1 Smooth Zoom w grze | ✅ przetestowana przez zespół |
+| v0.8.0 Visuals Stage 1 | 🧪 wymaga prawdziwego buildu i testu Minecraft/Fabric |
+| Podpisany plik release.json / ZIP aktualizacji | ⏳ **jeszcze nie opublikowano** |
 
-Until the first tested release (planned v0.8.0), a 404 at that URL is expected. This is **not** evidence of a broken v0.7.1 installation.
+### Jeden adres do wpisania w aktualnym launcherze v0.7.1
+`https://tymon2323studios.github.io/kolega-launcher-updates/release.json`
 
-## Safety
-The launcher pins an RSA public key and verifies RSA-PSS/SHA256 signatures, exact download size, SHA256 hash and required ZIP entries. The GitHub workflow validates release signatures and compatibility with the **v0.7.1 legacy updater**, which expects an extra ClientFiles/kolega-client-0.7.1.jar in the first new release.
+Dopóki nie opublikowano pierwszego wydania, **404 jest normalne**. Nie należy wgrywać wymyślonej lub niepodpisanej paczki.
 
-Never upload private PEM signing keys, access tokens, accounts, or Minecraft player data.
+### Publikacja pierwszej aktualizacji
+W kompletnym pakiecie źródeł v0.8.0 przygotowano dwa skrypty do Windows: `PRZYGOTUJ-UPDATE.bat` (budowa + podpis + testy; bez publikacji), a po **udanych testach w grze** `OPUBLIKUJ-UPDATE.bat` (jednoczesny commit manifestu i ZIP na GitHub).
 
-**Publisher instructions:** [RELEASE-PROCESS.md](RELEASE-PROCESS.md).  
-**Validation:** [tools/validate_release.py](tools/validate_release.py).  
-**Development code previews:** [development/](development/).
+**Instrukcja:** [RELEASE-PROCESS.md](RELEASE-PROCESS.md).  
+**Walidator:** [tools/validate_release.py](tools/validate_release.py).  
+**Rozwój visuali:** [development/](development/).
+
+Nigdy nie przesyłaj ani nie commituj prywatnego klucza podpisywania.
