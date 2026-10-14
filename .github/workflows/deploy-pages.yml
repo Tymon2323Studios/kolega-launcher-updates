@@ -19,7 +19,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Validate release assets
+      - name: Run release validator tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Validate signed release assets
         run: python3 tools/validate_release.py site
       - name: Configure Pages
         uses: actions/configure-pages@v5
