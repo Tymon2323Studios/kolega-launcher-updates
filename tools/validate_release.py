@@ -60,7 +60,7 @@ def validate(site, public_key=PUBKEY):
         raise ValueError('Release requires BOTH manifest and ZIP')
     info = signed_payload(manifest, public_key)
     version = info.get('version')
-    if not isinstance(version, str) or not re.fullmatch(r'\d+\.\d+\.\d+', version):
+    if not isinstance(version, str) or not re.fullmatch(r'\d+\.\d+\.\d+(?:\.\d+)?', version):
         raise ValueError('Invalid version')
     if tuple(map(int, version.split('.'))) <= (0, 7, 1):
         raise ValueError('Release must be newer than installed v0.7.1')

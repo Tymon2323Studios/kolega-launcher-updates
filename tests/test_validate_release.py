@@ -33,6 +33,12 @@ class ChannelTest(unittest.TestCase):
     def test_empty(self): self.assertFalse(validate(self.site,self.pub))
     def test_valid(self):
         self.publish(); self.assertTrue(validate(self.site,self.pub))
+    def test_valid_four_part(self):
+        self.publish(version='0.9.5.2')
+        self.assertTrue(validate(self.site, self.pub))
+    def test_reject_five_part_version(self):
+        self.publish(version='0.9.5.2.1')
+        with self.assertRaisesRegex(ValueError, 'Invalid version'): validate(self.site, self.pub)
     def test_changed_payload(self):
         self.publish(tamper=True)
         with self.assertRaisesRegex(ValueError,'signature'): validate(self.site,self.pub)
